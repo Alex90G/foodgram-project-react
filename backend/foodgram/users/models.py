@@ -1,11 +1,20 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
+USER = 'user'
+SUPERUSER = 'superuser'
+ADMIN = 'admin'
 ENABLE = 'enable'
 BLOCK = 'block'
 STATUSES = [
     ('enable', ENABLE),
     ('block', BLOCK),
+]
+ROLES = [
+    ('user', USER),
+    ('superuser', SUPERUSER),
+    ('admin', ADMIN)
 ]
 
 
@@ -13,26 +22,50 @@ class User(AbstractUser):
     """Кастомная модель пользователя."""
     email = models.EmailField(
         max_length=254,
-        unique=True
+        unique=True,
+        verbose_name='Почта',
     )
     username = models.CharField(
         max_length=150,
         unique=True,
+        verbose_name='Логин',
     )
     first_name = models.CharField(
         max_length=150,
+        verbose_name='Имя',
     )
     last_name = models.CharField(
         max_length=150,
+        verbose_name='Фамилия',
     )
     password = models.CharField(
         max_length=150,
+        verbose_name='Пароль',
     )
     status = models.CharField(
         max_length=max(len(status) for _, status in STATUSES),
         choices=STATUSES,
-        default=ENABLE
+        default=ENABLE,
+        verbose_name='Статус',
     )
+    role = models.CharField(
+        max_length=max(len(role) for _, role in ROLES),
+        choices=ROLES,
+        default=USER,
+        verbose_name='Роль',
+    )
+
+    @property
+    def is_admin(self):
+        return self.is_staff or self.role == ADMIN
+
+    @property
+    def is_superuser(self):
+        return self.role == SUPERUSER
+
+    @property
+    def is_user(self):
+        return self.role == USER
 
     @property
     def is_block(self):
@@ -71,3 +104,6 @@ class Follow(models.Model):
                 fields=['user', 'author'], name='unique_together'
             )
         ]
+
+    def __str__(self):
+        return f'Подписки пользователя {self.user}'

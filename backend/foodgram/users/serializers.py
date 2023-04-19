@@ -1,0 +1,95 @@
+from djoser.serializers import UserCreateSerializer
+from rest_framework import serializers
+
+from recipes.models import Recipes
+from .models import Follow, User
+
+
+class CustomCreateUserSerializer(UserCreateSerializer):
+    """Сериализатор создания пользователя."""
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'password'
+        )
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    """Сериализатор для отображения пользователя."""
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj.id).exists()
+
+
+class FollowRecipesSerializer(serializers.ModelSerializer):
+    """Сериализатор подписок на рецепты."""
+    class Meta:
+        model = Recipes
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+
+
+class FollowUsersSerializer(serializers.ModelSerializer):
+    """Сериализатор подписок на пользователя."""
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Follow
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        )
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj.author).exists()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        recipes_limit = request.GET.get('recipes_limit')
+        queryset = Recipes.objects.filter(author=obj.author)
+        if recipes_limit:
+            queryset = queryset[:int(recipes_limit)]
+        return FollowRecipesSerializer(queryset, many=True).data
+
+    def get_recipes_count(self, obj):
+        return Recipes.objects.filter(author=obj.author).count()

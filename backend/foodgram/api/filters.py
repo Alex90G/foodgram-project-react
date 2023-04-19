@@ -1,5 +1,6 @@
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 
 from recipes.models import Recipes, Tags
 from users.models import User
@@ -27,12 +28,12 @@ class RecipesFilters(FilterSet):
     )
 
     def filter_is_favorited(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
+        if value and IsAuthenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
+        if value and IsAuthenticated:
             return queryset.filter(shopping_carts__user=self.request.user)
         return queryset
 

@@ -1,64 +1,30 @@
 from django.db.models import Sum
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
-from rest_framework import permissions, status
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from recipes.models import (FavoriteRecipes, Ingredients,
-                            IngredientsForRecipes, Recipes, ShoppingCart, Tags)
-from users.models import Follow, User
-
+from recipes.models import (
+    FavoriteRecipes,
+    Ingredients,
+    IngredientsForRecipes,
+    Recipes,
+    ShoppingCart,
+    Tags
+)
 from .filters import IngredientsFilters, RecipesFilters
-from .mixins import CustomRecipesViewSet, ListRetrieveViewSet
+from .mixins import ListRetrieveViewSet
 from .pagination import CustomPageNumberPagination
 from .permissions import AuthorAdminOrReadOnly
-from .serializers import (FavoriteRecipesSerializer, FollowUsersSerializer,
-                          IngredientsSerializer, RecipesSerializer,
-                          ShoppingCartSerializer, TagsSerializer)
-
-
-class CustomUserViewSet(UserViewSet):
-    """
-    Обрабатывает запросы к странице пользователя.
-    """
-    pagination_class = CustomPageNumberPagination
-
-    @action(detail=False, permission_classes=[permissions.IsAuthenticated])
-    def subscriptions(self, request):
-        queryset = Follow.objects.filter(user=request.user)
-        page = self.paginate_queryset(queryset)
-        serializer = FollowUsersSerializer(
-            page, many=True,
-            context={'request': request})
-        return self.get_paginated_response(serializer.data)
-
-    @action(detail=True,
-            methods=['post', 'delete'],
-            permission_classes=[permissions.IsAuthenticated])
-    def subscribe(self, request, id=None):
-        user = request.user
-        author = get_object_or_404(User, id=id)
-        if request.method == "POST":
-            if user == author:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            if Follow.objects.filter(user=user, author=author).exists():
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.create(user=user, author=author)
-            queryset = Follow.objects.get(user=request.user, author=author)
-            serializer = FollowUsersSerializer(
-                queryset,
-                context={'request': request}
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == "DELETE":
-            if not Follow.objects.filter(user=user, author=author).exists():
-                return Response('Подписка отсутствует.',
-                                status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.get(user=user, author=author).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+from .serializers import (
+    FavoriteRecipesSerializer,
+    IngredientsSerializer,
+    RecipesSerializer,
+    ShoppingCartSerializer,
+    TagsSerializer
+)
 
 
 class TagsViewSet(ListRetrieveViewSet):
@@ -77,7 +43,7 @@ class IngredientsViewSet(ListRetrieveViewSet):
     search_fields = ('^name',)
 
 
-class RecipesViewSet(CustomRecipesViewSet):
+class RecipesViewSet(viewsets.ModelViewSet):
     """
     Обрабатывает запосы по рецептам.
     Добавлены методы для добавления рецепта в избранное,
@@ -89,6 +55,18 @@ class RecipesViewSet(CustomRecipesViewSet):
     filter_backends = (DjangoFilterBackend, )
     filter_class = RecipesFilters
     permission_classes = (AuthorAdminOrReadOnly,)
+
+    def adding_object(self, serializers, model, user, pk):
+        recipes = get_object_or_404(Recipes, id=pk)
+        model.objects.create(user=user, recipes=recipes)
+        queryset = model.objects.get(user=user, recipes=recipes)
+        serializer = serializers(queryset)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def deleting_object(self, model, pk, user):
+        recipes = get_object_or_404(Recipes, id=pk)
+        model.objects.get(user=user, recipes=recipes).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
             detail=True, methods=['post', 'delete'],

@@ -24,12 +24,12 @@ class Command(BaseCommand):
                 for ingredient in data:
                     try:
                         Ingredients.objects.create(name=ingredient["name"],
-                                                  measurement_unit=ingredient[
-                                                      "measurement_unit"])
+                                                   measurement_unit=ingredient[
+                                                   "measurement_unit"])
                     except IntegrityError:
                         print(f'Ингредиент {ingredient["name"]} '
                               f'{ingredient["measurement_unit"]} '
                               f'Ингредиент уже добавлен')
 
         except FileNotFoundError:
-            raise CommandError(f'Файл отсутствует')
+            raise CommandError('Файл отсутствует')

@@ -116,12 +116,12 @@ class IngredientsForRecipes(models.Model):
         'Количество'
     )
 
-    def __str__(self):
-        return f'Рецепт: {self.recipes}, Ингредиенты: {self.ingredients} '
-
     class Meta():
         verbose_name = 'Ингредиент для рецепта'
         verbose_name_plural = 'Ингредиенты для рецептов'
+
+    def __str__(self):
+        return f'Рецепт: {self.recipes}, Ингредиенты: {self.ingredients} '
 
 
 class FavoriteRecipes(models.Model):
@@ -139,13 +139,13 @@ class FavoriteRecipes(models.Model):
         verbose_name='Рецепты'
     )
 
-    def __str__(self):
-        return 'Избранные рецепты'
-
     class Meta():
         ordering = ('-id',)
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+
+    def __str__(self):
+        return 'Избранные рецепты'
 
 
 class ShoppingCart(models.Model):
