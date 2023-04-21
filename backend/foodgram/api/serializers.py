@@ -118,6 +118,22 @@ class RecipesSerializer(serializers.ModelSerializer):
             )
         return data
 
+    def adding_ingredients(self, recipes, ingredients):
+        ingredients_list = []
+        for ingredient in ingredients:
+            current_ingredient = Ingredients.objects.get(
+                id=ingredient.get('id')
+            )
+            current_amount = ingredient.get('amount')
+            ingredients_list.append(
+                IngredientsForRecipes(
+                    recipes=recipes,
+                    ingredients=current_ingredient,
+                    amount=current_amount
+                )
+            )
+        IngredientsForRecipes.objects.bulk_create(ingredients_list)
+
     def create(self, validated_data):
         ingredients_list = self.initial_data.get('ingredients')
         image = validated_data.pop('image')
@@ -126,14 +142,7 @@ class RecipesSerializer(serializers.ModelSerializer):
                                          **validated_data)
         tags = self.initial_data.get('tags')
         recipes.tags.set(tags)
-        for ingredient in ingredients_list:
-            current_ingredient = Ingredients.objects.get(
-                id=ingredient.get('id')
-            )
-            IngredientsForRecipes.objects.create(
-                ingredients=current_ingredient, recipes=recipes,
-                amount=ingredient.get('amount')
-            )
+        self.adding_ingredients(recipes, ingredients_list)
         return recipes
 
     def update(self, instance, validated_data):
@@ -148,14 +157,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         instance.save()
         IngredientsForRecipes.objects.filter(recipes=instance).delete()
         ingredients_list = self.initial_data.get('ingredients')
-        for ingredient in ingredients_list:
-            current_ingredient = Ingredients.objects.get(
-                id=ingredient.get('id')
-            )
-            IngredientsForRecipes.objects.create(
-                ingredients=current_ingredient,
-                recipes=instance, amount=ingredient.get('amount')
-            )
+        self.adding_ingredients(instance, ingredients_list)
         return instance
 
 

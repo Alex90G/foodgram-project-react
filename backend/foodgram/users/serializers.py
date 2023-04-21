@@ -18,6 +18,33 @@ class CustomCreateUserSerializer(UserCreateSerializer):
             'password'
         )
 
+    def validate_username(self, value):
+        if value == 'me' or '':
+            raise serializers.ValidationError(
+                {
+                    'username':
+                    'Нельзя использовать имя me в качестве имени пользователя.'
+                },
+            )
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError(
+                {
+                    'username':
+                    'Пользователь с данным username уже зарегистрирован.'
+                },
+            )
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                {
+                    'email':
+                    'Пользователь с данным email уже зарегистрирован.'
+                },
+            )
+        return value
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения пользователя."""
@@ -36,7 +63,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if user.is_anonymous:
+        if user.is_anonymous:  # Если упаковывать в одно выражение, падает сервер при попытке незарег. польз. получить список польз.
             return False
         return Follow.objects.filter(user=user, author=obj.id).exists()
 
@@ -81,7 +108,7 @@ class FollowUsersSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj.author).exists()
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')

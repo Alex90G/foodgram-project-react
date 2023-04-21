@@ -2,24 +2,22 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-USER = 'user'
-SUPERUSER = 'superuser'
-ADMIN = 'admin'
-ENABLE = 'enable'
-BLOCK = 'block'
-STATUSES = [
-    ('enable', ENABLE),
-    ('block', BLOCK),
-]
-ROLES = [
-    ('user', USER),
-    ('superuser', SUPERUSER),
-    ('admin', ADMIN)
-]
-
-
 class User(AbstractUser):
     """Кастомная модель пользователя."""
+    USER = 'user'
+    SUPERUSER = 'superuser'
+    ADMIN = 'admin'
+    ENABLE = 'enable'
+    BLOCK = 'block'
+    STATUSES = [
+        ('enable', ENABLE),
+        ('block', BLOCK),
+    ]
+    ROLES = [
+        ('user', USER),
+        ('superuser', SUPERUSER),
+        ('admin', ADMIN)
+    ]
     email = models.EmailField(
         max_length=254,
         unique=True,
@@ -55,26 +53,26 @@ class User(AbstractUser):
         verbose_name='Роль',
     )
 
-    @property
-    def is_admin(self):
-        return self.is_staff or self.role == ADMIN
-
-    @property
-    def is_superuser(self):
-        return self.role == SUPERUSER
-
-    @property
-    def is_user(self):
-        return self.role == USER
-
-    @property
-    def is_block(self):
-        return self.status == BLOCK
-
     class Meta:
         ordering = ('-id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    @property
+    def is_admin(self):
+        return self.is_staff or self.role == self.ADMIN
+
+    @property
+    def is_superuser(self):
+        return self.role == self.SUPERUSER
+
+    @property
+    def is_user(self):
+        return self.role == self.USER
+
+    @property
+    def is_block(self):
+        return self.status == self.BLOCK
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
