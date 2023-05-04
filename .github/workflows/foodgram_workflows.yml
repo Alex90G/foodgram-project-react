@@ -38,12 +38,20 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Push to Docker Hub
+    - name: Push to Docker Hub backend
       uses: docker/build-push-action@v2 
       with:
         push: true
-        context: ./api_yamdb/
-        tags: alex90g/api_yamdb:final
+        context: ./backend/foodgram
+        file: ./backend/foodgram/Dockerfile
+        tags: alex90g/foodgram-back:latest
+    - name: Push to Docker Hub frontend
+      uses: docker/build-push-action@v2 
+      with:
+        push: true
+        context: ./frontend
+        file: ./frontend/Dockerfile
+        tags: alex90g/foodgram-front:latest
   deploy:
     if: "contains(github.ref, 'master' || 'main')"
     runs-on: ubuntu-latest
@@ -57,6 +65,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
+          sudo docker pull alex90g/foodgram-back:latest
+          sudo docker pull alex90g/foodgram-front:latest
           sudo docker-compose stop
           sudo docker-compose rm web
           touch .env
