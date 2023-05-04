@@ -33,9 +33,10 @@ class Tags(models.Model):
         max_length=100,
         unique=True
     )
-    color = ColorField(
+    color = models.CharField(
+        max_length=32,
         verbose_name='Цвет',
-        format='hexa',
+        default='#E26C2D',
         unique=True
     )
     slug = models.SlugField(

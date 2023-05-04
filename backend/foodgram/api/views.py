@@ -5,6 +5,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from django.db.models import Exists, OuterRef, Sum
 
 from recipes.models import (
     FavoriteRecipes,
@@ -15,7 +16,7 @@ from recipes.models import (
     Tags
 )
 from .filters import IngredientsFilters, RecipesFilters
-from .mixins import ListRetrieveViewSet
+from .mixins import CustomRecipeViewSet, ListRetrieveViewSet
 from .pagination import CustomPageNumberPagination
 from .permissions import AuthorAdminOrReadOnly
 from .serializers import (
@@ -43,7 +44,7 @@ class IngredientsViewSet(ListRetrieveViewSet):
     search_fields = ('^name',)
 
 
-class RecipesViewSet(viewsets.ModelViewSet):
+class RecipesViewSet(CustomRecipeViewSet):
     """
     Обрабатывает запосы по рецептам.
     Добавлены методы для добавления рецепта в избранное,
@@ -56,20 +57,22 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filter_class = RecipesFilters
     permission_classes = (AuthorAdminOrReadOnly,)
 
-    def adding_object(self, serializers, model, user, pk):
-        recipes = get_object_or_404(Recipes, id=pk)
-        model.objects.create(user=user, recipes=recipes)
-        queryset = model.objects.get(user=user, recipes=recipes)
-        serializer = serializers(queryset)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #def adding_object(self, serializers, model, user, pk):
+     #   recipes = get_object_or_404(Recipes, pk=pk)
+      #  model.objects.create(user=user, recipes=recipes)
+       # queryset = model.objects.get(user=user, recipes=recipes)
+        #serializer = serializers(queryset)
+        #return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def deleting_object(self, model, pk, user):
-        recipes = get_object_or_404(Recipes, id=pk)
-        model.objects.get(user=user, recipes=recipes).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    #def deleting_object(self, model, pk, user):
+     #   recipes = get_object_or_404(Recipes, pk=pk)
+      #  model.objects.get(user=user, recipes=recipes).delete()
+       # return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
             detail=True, methods=['post', 'delete'],
+            #url_path="favorite",
+            #url_name="favorite",
             permission_classes=[permissions.IsAuthenticated]
     )
     def favorite(self, request, pk=None):
