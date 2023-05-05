@@ -16,10 +16,10 @@ services:
 
   web:
 
-    #image: alex90g/api_yamdb:final
-    build:
-        context: ../backend/foodgram/
-        dockerfile: Dockerfile
+    image: alex90g/foodgram-back
+    #build:
+        #context: ../backend/foodgram/
+        #dockerfile: Dockerfile
         
     restart: always
 
@@ -40,10 +40,11 @@ services:
       - ./.env
 
   frontend:
-
-    build:
-        context: ../frontend/
-        dockerfile: Dockerfile
+    
+    image: alex90g/foodgram-front
+    #build:
+        #context: ../frontend/
+        #dockerfile: Dockerfile
 
     volumes:
       - ../frontend/:/app/result_build/
