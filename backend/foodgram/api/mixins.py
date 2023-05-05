@@ -1,8 +1,7 @@
+from recipes.models import Recipes
 from rest_framework import mixins, status, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
-from recipes.models import Recipes
 
 
 class ListRetrieveViewSet(mixins.ListModelMixin,
@@ -10,6 +9,7 @@ class ListRetrieveViewSet(mixins.ListModelMixin,
                           viewsets.GenericViewSet):
     """Обработка запросов по тегам и ингредиентам. """
     pass
+
 
 class CustomRecipeViewSet(viewsets.ModelViewSet):
     """Класс для обратботки запросов по рецептам."""

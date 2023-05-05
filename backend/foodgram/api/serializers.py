@@ -2,16 +2,9 @@ import base64
 
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from recipes.models import (FavoriteRecipes, Ingredients,
+                            IngredientsForRecipes, Recipes, ShoppingCart, Tags)
 from rest_framework import serializers
-
-from recipes.models import (
-    FavoriteRecipes,
-    Ingredients,
-    IngredientsForRecipes,
-    Recipes,
-    ShoppingCart,
-    Tags
-)
 from users.serializers import CustomUserSerializer
 
 
@@ -67,15 +60,11 @@ class RecipesSerializer(serializers.ModelSerializer):
     ingredients = IngredientsForRecipesSerializer(read_only=True, many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    #is_favorited = serializers.BooleanField(read_only=True)
-    #is_in_shopping_cart = serializers.BooleanField(read_only=True)
-
 
     class Meta:
         model = Recipes
         exclude = ('pub_date', )
 
-    
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:

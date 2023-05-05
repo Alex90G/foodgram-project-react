@@ -5,7 +5,6 @@ from django.db import models
 class User(AbstractUser):
     """Кастомная модель пользователя."""
     USER = 'user'
-    #SUPERUSER = 'superuser'
     ADMIN = 'admin'
     ENABLE = 'enable'
     BLOCK = 'block'
@@ -15,7 +14,6 @@ class User(AbstractUser):
     ]
     ROLES = [
         ('user', USER),
-        #('superuser', SUPERUSER),
         ('admin', ADMIN)
     ]
     email = models.EmailField(
@@ -61,10 +59,6 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.is_staff or self.role == self.ADMIN
-
-    #@property
-    #def is_superuser(self):
-        #return self.role == self.SUPERUSER
 
     @property
     def is_user(self):

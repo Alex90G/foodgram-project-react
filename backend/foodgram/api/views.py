@@ -1,31 +1,19 @@
 from django.db.models import Sum
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets
+from recipes.models import (FavoriteRecipes, Ingredients,
+                            IngredientsForRecipes, Recipes, ShoppingCart, Tags)
+from rest_framework import permissions, status
 from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from django.db.models import Exists, OuterRef, Sum
 
-from recipes.models import (
-    FavoriteRecipes,
-    Ingredients,
-    IngredientsForRecipes,
-    Recipes,
-    ShoppingCart,
-    Tags
-)
 from .filters import IngredientsFilters, RecipesFilters
 from .mixins import CustomRecipeViewSet, ListRetrieveViewSet
 from .pagination import CustomPageNumberPagination
 from .permissions import AuthorAdminOrReadOnly
-from .serializers import (
-    FavoriteRecipesSerializer,
-    IngredientsSerializer,
-    RecipesSerializer,
-    ShoppingCartSerializer,
-    TagsSerializer
-)
+from .serializers import (FavoriteRecipesSerializer, IngredientsSerializer,
+                          RecipesSerializer, ShoppingCartSerializer,
+                          TagsSerializer)
 
 
 class TagsViewSet(ListRetrieveViewSet):
@@ -57,23 +45,9 @@ class RecipesViewSet(CustomRecipeViewSet):
     filter_class = RecipesFilters
     permission_classes = (AuthorAdminOrReadOnly,)
 
-    #def adding_object(self, serializers, model, user, pk):
-     #   recipes = get_object_or_404(Recipes, pk=pk)
-      #  model.objects.create(user=user, recipes=recipes)
-       # queryset = model.objects.get(user=user, recipes=recipes)
-        #serializer = serializers(queryset)
-        #return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    #def deleting_object(self, model, pk, user):
-     #   recipes = get_object_or_404(Recipes, pk=pk)
-      #  model.objects.get(user=user, recipes=recipes).delete()
-       # return Response(status=status.HTTP_204_NO_CONTENT)
-
     @action(
-            detail=True, methods=['post', 'delete'],
-            #url_path="favorite",
-            #url_name="favorite",
-            permission_classes=[permissions.IsAuthenticated]
+        detail=True, methods=['post', 'delete'],
+        permission_classes=[permissions.IsAuthenticated]
     )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
@@ -81,15 +55,15 @@ class RecipesViewSet(CustomRecipeViewSet):
                                       pk=pk,
                                       serializers=FavoriteRecipesSerializer,
                                       user=request.user)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             return self.deleting_object(
                 model=FavoriteRecipes, pk=pk, user=request.user
             )
         return None
 
     @action(
-            detail=True, methods=['post', 'delete'],
-            permission_classes=[permissions.IsAuthenticated]
+        detail=True, methods=['post', 'delete'],
+        permission_classes=[permissions.IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
@@ -119,8 +93,7 @@ class RecipesViewSet(CustomRecipeViewSet):
                 f"{ingredient['ingredients__measurement_unit']}; "
             )
 
-        response = FileResponse(
+        return FileResponse(
             shopping_list, as_attachment=True, filename='ShoppingList.txt',
             content_type='text/plain;charset=UTF-8'
         )
-        return response

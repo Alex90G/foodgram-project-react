@@ -1,7 +1,7 @@
 from djoser.serializers import UserCreateSerializer
+from recipes.models import Recipes
 from rest_framework import serializers
 
-from recipes.models import Recipes
 from .models import Follow, User
 
 
@@ -63,7 +63,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if user.is_anonymous:  # Если упаковывать в одно выражение, падает сервер при попытке незарег. польз. получить список польз.
+        if user.is_anonymous:
             return False
         return Follow.objects.filter(user=user, author=obj.id).exists()
 

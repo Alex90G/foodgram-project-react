@@ -15,9 +15,7 @@ class AuthorAdminOrReadOnly(permissions.BasePermission):
             request.method in permissions.SAFE_METHODS
             or (
                 user.is_authenticated and (
-                obj.author == user or user.is_admin 
+                    obj.author == user or user.is_admin
                 )
             )
         )
-
-#or user.is_superuser

@@ -1,10 +1,9 @@
+from api.pagination import CustomPageNumberPagination
 from djoser.views import UserViewSet
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-
-from api.pagination import CustomPageNumberPagination
 from users.models import Follow, User
 from users.serializers import FollowUsersSerializer
 
@@ -48,4 +47,4 @@ class CustomUserViewSet(UserViewSet):
                 return Response('Подписка отсутствует.',
                                 status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.get(user=user, author=author).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

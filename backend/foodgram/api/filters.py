@@ -1,8 +1,7 @@
 from django_filters.rest_framework import FilterSet, filters
+from recipes.models import Recipes, Tags
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
-
-from recipes.models import Recipes, Tags
 from users.models import User
 
 
