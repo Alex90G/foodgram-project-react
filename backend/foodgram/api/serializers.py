@@ -89,7 +89,9 @@ class RecipesSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Рецепт отсутствует в Ваших рецептах.'
                 )
-        if Recipes.objects.filter(author_id=user.id, id=recipes_id).exists():
+        if Recipes.objects.filter(
+            author_id=user.id, id=recipes_id
+        ).exists() and self.context['request'].method != 'PATCH':
             raise serializers.ValidationError(
                 'Данный рецепт уже есть в Ваших рецептах.'
             )
