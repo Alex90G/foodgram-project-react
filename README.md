@@ -10,6 +10,12 @@
 
 > электронная почта: admin@test.ru
 
+# Документация API и примеры:
+
+```json
+http://84.201.177.90/api/docs/redoc.html
+```
+
 # Общее описание проекта:
 Онлайн-сервис «Продуктовый помощник Foodgram» позволяе пользователям публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
@@ -115,12 +121,6 @@ git clone https://github.com/Alex90G/foodgram-project-react.git
 
 #### Загрузить ингредиенты в базу данных можно с помощью команды
 >sudo docker-compose exec web python manage.py upload_ingredients ingredients.json
-
-# Документация API и примеры:
-
-```json
-/redoc/
-```
 
 # Статус бэйджа (настройки приватности репозитория - "Public")
 ![main workflow](https://github.com/Alex90G/foodgram-project-react/actions/workflows/foodgram_workflows.yml/badge.svg)
