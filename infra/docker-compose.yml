@@ -17,9 +17,6 @@ services:
   web:
 
     image: alex90g/foodgram-back
-    #build:
-        #context: ../backend/foodgram/
-        #dockerfile: Dockerfile
         
     restart: always
 
@@ -42,9 +39,6 @@ services:
   frontend:
     
     image: alex90g/foodgram-front
-    #build:
-        #context: ../frontend/
-        #dockerfile: Dockerfile
 
     volumes:
       - ../frontend/:/app/result_build/
