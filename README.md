@@ -122,4 +122,4 @@ git clone https://github.com/Alex90G/foodgram-project-react.git
 > пароль: QazThm1!$
 
 # Статус бэйджа (настройки приватности репозитория - "Public")
-![main workflow](https://github.com/Alex90G/foodgram-project-react/actions/workflows/foodgram-project-react_workflow.yml/badge.svg)
+![main workflow](https://github.com/Alex90G/foodgram-project-react/actions/workflows/foodgram_workflows.yml/badge.svg)
