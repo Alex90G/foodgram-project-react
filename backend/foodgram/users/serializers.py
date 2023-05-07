@@ -19,13 +19,6 @@ class CustomCreateUserSerializer(UserCreateSerializer):
         )
 
     def validate_username(self, value):
-        # if value == 'me' or '':
-            # raise serializers.ValidationError(
-                # {
-                    # 'username':
-                    # 'Нельзя использовать имя me в качестве имени пользователя.'
-                # },
-            # )
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError(
                 {
