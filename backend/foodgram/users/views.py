@@ -1,4 +1,5 @@
 from api.pagination import CustomPageNumberPagination
+from api.permissions import AuthorAdminOrReadOnly
 from djoser.views import UserViewSet
 from rest_framework import permissions, status
 from rest_framework.decorators import action
@@ -13,6 +14,7 @@ class CustomUserViewSet(UserViewSet):
     Обрабатывает запросы к странице пользователя.
     """
     pagination_class = CustomPageNumberPagination
+    permission_classes = (AuthorAdminOrReadOnly,)
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
