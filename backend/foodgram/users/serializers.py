@@ -42,6 +42,7 @@ class CustomCreateUserSerializer(UserCreateSerializer):
             )
         return value
 
+
 class CustomUserSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения пользователя."""
     is_subscribed = serializers.SerializerMethodField()
