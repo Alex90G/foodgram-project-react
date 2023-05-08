@@ -27,7 +27,7 @@ class CustomCreateUserSerializer(UserCreateSerializer):
                     'Пользователь с данным username уже зарегистрирован.'
                 },
             )
-        
+
         if user.username == "me":
             raise serializers.ValidationError(
                 {
