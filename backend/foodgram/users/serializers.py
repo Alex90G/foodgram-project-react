@@ -27,7 +27,7 @@ class CustomCreateUserSerializer(UserCreateSerializer):
                 },
             )
 
-        if value == 'me' or '':
+        elif value == 'me' or '':
             raise serializers.ValidationError(
                 {
                     'username':
