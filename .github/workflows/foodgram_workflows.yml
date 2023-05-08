@@ -22,6 +22,7 @@ jobs:
     - name: Test with flake8 and django tests
       run: |
         python -m flake8
+        
   build_and_push_to_docker_hub:
     if: "contains(github.ref, 'master' || 'main')"
     name: Push Docker image to Docker Hub
@@ -51,8 +52,8 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         tags: alex90g/foodgram-front:latest
+        
   deploy:
-    if: "contains(github.ref, 'master' || 'main')"
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
     steps:
@@ -76,8 +77,8 @@ jobs:
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           sudo docker-compose up -d
+          
   send_message:
-    if: "contains(github.ref, 'master' || 'main')"
     runs-on: ubuntu-latest
     needs: deploy
     steps:
