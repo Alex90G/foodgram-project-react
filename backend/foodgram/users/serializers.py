@@ -31,7 +31,7 @@ class CustomCreateUserSerializer(UserCreateSerializer):
             raise serializers.ValidationError(
                 {
                     'username':
-                    'Нельзя использовать имя "me" в качестве имени пользователя.'
+                    'Нельзя использовать имя me в качестве имени пользователя.'
                 },
             )
 
