@@ -80,7 +80,7 @@ class RecipesViewSet(CustomRecipeViewSet):
     @action(detail=False, permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         user = request.user
-        shopping_list = 'Список покупок: '
+        shopping_list = 'Список покупок:\n '
         ingredients = IngredientsForRecipes.objects.filter(
             recipes__shopping_cart__user=user).values(
                 'ingredients__name',
@@ -88,8 +88,8 @@ class RecipesViewSet(CustomRecipeViewSet):
                     'ingredients__name').annotate(amount=Sum('amount'))
         for ingredient in ingredients:
             shopping_list = (
-                shopping_list + f"{ingredient['ingredients__name']} "
-                f"{ingredient['amount']} "
+                f"{shopping_list}\n" + f"{ingredient['ingredients__name']} " + " -"
+                f" {ingredient['amount']} "
                 f"{ingredient['ingredients__measurement_unit']}; "
             )
 
