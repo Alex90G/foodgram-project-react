@@ -18,7 +18,14 @@ class CustomCreateUserSerializer(UserCreateSerializer):
             'password'
         )
 
-    def validate_username(self, value):
+    def validate(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                {
+                    'email':
+                    'Пользователь с данным email уже зарегистрирован.'
+                },
+            )
         if value == 'me' or '':
             raise serializers.ValidationError(
                 {
@@ -34,17 +41,6 @@ class CustomCreateUserSerializer(UserCreateSerializer):
                 },
             )
         return value
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                {
-                    'email':
-                    'Пользователь с данным email уже зарегистрирован.'
-                },
-            )
-        return value
-
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения пользователя."""
