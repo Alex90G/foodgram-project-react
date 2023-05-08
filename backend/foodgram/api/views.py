@@ -88,7 +88,8 @@ class RecipesViewSet(CustomRecipeViewSet):
                     'ingredients__name').annotate(amount=Sum('amount'))
         for ingredient in ingredients:
             shopping_list = (
-                f"{shopping_list}\n" + f"{ingredient['ingredients__name']} " + " -"
+                f"{shopping_list}\n" + f"{ingredient['ingredients__name']} "
+                + " -"
                 f" {ingredient['amount']} "
                 f"{ingredient['ingredients__measurement_unit']}; "
             )
