@@ -19,6 +19,7 @@ class CustomCreateUserSerializer(UserCreateSerializer):
         )
 
     def validate_username(self, value):
+        user = self.context.get('request').user
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError(
                 {
@@ -26,6 +27,15 @@ class CustomCreateUserSerializer(UserCreateSerializer):
                     'Пользователь с данным username уже зарегистрирован.'
                 },
             )
+        
+        if user.username == "me":
+            raise serializers.ValidationError(
+                {
+                    'username':
+                    'Регистрация пользователя с логином "me" не разрешена'
+                },
+            )
+
         return value
 
     def validate_email(self, value):
