@@ -22,7 +22,6 @@ class CustomCreateUserSerializer(UserCreateSerializer):
         if value == 'me' or '':
             raise serializers.ValidationError(
                 {
-                    'username':
                     'Нельзя использовать имя me в качестве имени пользователя.'
                 },
             )
